@@ -169,6 +169,19 @@
             return !!(el && el.id && stepData["impress-" + el.id]);
         }
         
+        var closestStep = function ( el ) {
+            while ( el && el.parentNode ) {
+                if (isStep(el)) {
+                    return el;
+                }
+                if (el == document.body) {
+                    return null;
+                }
+                el = el.parentNode;
+            }
+            return null;
+        }
+        
         steps.forEach(function ( el, idx ) {
             var data = el.dataset,
                 step = {
@@ -309,6 +322,7 @@
         
         return roots[ "impress-root-" + rootId ] = {
             isStep: isStep,
+            closestStep: closestStep,
             select: select,
             selectNext: selectNext,
             selectPrev: selectPrev
