@@ -321,7 +321,6 @@
         goto(getElementFromUrl() || steps[0]);
 
         return roots[ "impress-root-" + rootId ] = {
-            isStep: isStep,
             closestStep: closestStep,
             
             goto: goto,
@@ -330,9 +329,14 @@
         }
 
     }
+})(document, window);
+
+// EVENTS
+
+(function ( document, window ) {
+    'use strict';
     
-    // EVENTS
-    
+    // keyboard navigation handler
     document.addEventListener("keydown", function ( event ) {
         if ( event.keyCode == 9 || ( event.keyCode >= 32 && event.keyCode <= 34 ) || (event.keyCode >= 37 && event.keyCode <= 40) ) {
             switch( event.keyCode ) {
@@ -353,13 +357,13 @@
             event.preventDefault();
         }
     }, false);
-
+    
+    // delegated handler for clicking on the links to presentation steps
     document.addEventListener("click", function ( event ) {
         // event delegation with "bubbling"
-        // check if event target (or any of its parents is a link or a step)
+        // check if event target (or any of its parents is a link)
         var target = event.target;
         while ( (target.tagName != "A") &&
-                (!impress().isStep(target)) &&
                 (target != document.body) ) {
             target = target.parentNode;
         }
@@ -369,9 +373,19 @@
             
             // if it's a link to presentation step, target this step
             if ( href && href[0] == '#' ) {
-                target = byId( href.slice(1) );
+                target = document.getElementById( href.slice(1) );
             }
         }
+        
+        if ( impress().goto(target) ) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+        }
+    }, false);
+    
+    // delegated handler for clicking on step elements
+    document.addEventListener("click", function ( event ) {
+        var target = impress().closestStep( event.target );
         
         if ( impress().goto(target) ) {
             event.preventDefault();
