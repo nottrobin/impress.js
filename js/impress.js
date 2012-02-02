@@ -169,7 +169,7 @@
             return !!(el && el.id && stepData["impress-" + el.id]);
         }
         
-        var closestStep = function ( el ) {
+        var getStep = function ( el ) {
             while ( el && el.parentNode ) {
                 if (isStep(el)) {
                     return el;
@@ -321,7 +321,7 @@
         goto(getElementFromUrl() || steps[0]);
 
         return roots[ "impress-root-" + rootId ] = {
-            closestStep: closestStep,
+            getStep: getStep,
             
             goto: goto,
             next: next,
@@ -385,7 +385,7 @@
     
     // delegated handler for clicking on step elements
     document.addEventListener("click", function ( event ) {
-        var target = impress().closestStep( event.target );
+        var target = impress().getStep( event.target );
         
         if ( impress().goto(target) ) {
             event.preventDefault();
