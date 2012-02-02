@@ -221,7 +221,7 @@
         var active = null;
         var hashTimeout = null;
         
-        var select = function ( el ) {
+        var goto = function ( el ) {
             if ( !isStep(el) || el == active) {
                 // selected element is not defined as step or is already active
                 return false;
@@ -298,34 +298,35 @@
             return el;
         };
         
-        var selectPrev = function () {
+        var prev = function () {
             var prev = steps.indexOf( active ) - 1;
             prev = prev >= 0 ? steps[ prev ] : steps[ steps.length-1 ];
             
-            return select(prev);
+            return goto(prev);
         };
         
-        var selectNext = function () {
+        var next = function () {
             var next = steps.indexOf( active ) + 1;
             next = next < steps.length ? steps[ next ] : steps[ 0 ];
             
-            return select(next);
+            return goto(next);
         };
         
         window.addEventListener("hashchange", function () {
-            select( getElementFromUrl() );
+            goto( getElementFromUrl() );
         }, false);
         
         // START 
         // by selecting step defined in url or first step of the presentation
-        select(getElementFromUrl() || steps[0]);
-        
+        goto(getElementFromUrl() || steps[0]);
+
         return roots[ "impress-root-" + rootId ] = {
             isStep: isStep,
             closestStep: closestStep,
-            select: select,
-            selectNext: selectNext,
-            selectPrev: selectPrev
+            
+            goto: goto,
+            next: next,
+            prev: prev
         }
 
     }
@@ -338,14 +339,14 @@
                 case 33: ; // pg up
                 case 37: ; // left
                 case 38:   // up
-                         impress().selectPrev();
+                         impress().prev();
                          break;
                 case 9:  ; // tab
                 case 32: ; // space
                 case 34: ; // pg down
                 case 39: ; // right
                 case 40:   // down
-                         impress().selectNext();
+                         impress().next();
                          break;
             }
             
@@ -372,7 +373,7 @@
             }
         }
         
-        if ( impress().select(target) ) {
+        if ( impress().goto(target) ) {
             event.preventDefault();
         }
     }, false);
